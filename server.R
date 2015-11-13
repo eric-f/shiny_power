@@ -8,13 +8,21 @@
 library(shiny)
 source("global.R")
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
 
 
   out <- reactive(power.t.test.wrapper(input))
 
+  ## update input fields -------------------------------------------------------
+  observe(updateNumericInput(session, "n",
+                             value=ceiling(out()$n)))
+  observe(updateNumericInput(session, "power",
+                             value=round(out()$power, 3),
+                             min=input$alpha))
+
+  ## output --------------------------------------------------------------------
   output$t.test.power <- renderText({
-    out()$power
+    round(out()$power, 3)
   })
   output$n <- renderText(
     ceiling(out()$n)
