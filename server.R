@@ -14,18 +14,24 @@ shinyServer(function(input, output, session) {
   out <- reactive(power.t.test.wrapper(input))
 
   ## update input fields -------------------------------------------------------
-  observe(updateNumericInput(session, "n",
-                             value=ceiling(out()$n)))
-  observe(updateNumericInput(session, "power",
-                             value=round(out()$power, 3),
-                             min=input$alpha))
+  observe({
+    if(input$solveFor=="Sample size"){
+      updateNumericInput(session, "n", value=ceiling(out()$n))
+    }
+    if(input$solveFor=="Power"){
+      updateNumericInput(session, "power", value=round(out()$power, 3),
+                         min=input$alpha)
+    }
+  })
 
   ## output --------------------------------------------------------------------
-  output$t.test.power <- renderText({
-    round(out()$power, 3)
+#   output$t.test.power <- renderText({
+#     round(out()$power, 3)
+#   })
+#   output$n <- renderText(
+#     ceiling(out()$n)
+#   )
+  output$t.test.power.curve <- renderPlot({
+    plot.power.t.test(input)
   })
-  output$n <- renderText(
-    ceiling(out()$n)
-  )
-
 })

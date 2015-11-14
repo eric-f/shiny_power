@@ -15,18 +15,20 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      numericInput("n", "Sample size:", 30, min = 2, max = Inf, step=10),
-      numericInput("delta", "Diffence in means", 0, min=-Inf, max=Inf, step=1),
-      numericInput("stdDev", "SD of data", 1, min=.Machine$double.eps, max=Inf, step=1),
-      numericInput("alpha", "alpha", 0.05, min=0, max=1, step=0.01),
-      numericInput("power", "Power", 0.8, min=0, max=1, step=0.05),
+      h4("Two-sample t-test"),
+      numericInput("n", "Sample size:", 30, min = 2, max = Inf, step=5),
+      numericInput("delta", "Diffence in means:", 1, min=-Inf, max=Inf, step=1),
+      numericInput("stdDev", "SD of data:", 1, min=.Machine$double.eps, max=Inf, step=1),
+      numericInput("alpha", "alpha:", 0.05, min=0, max=1, step=0.01),
+      numericInput("power", "Power:", 0.8, min=0, max=1, step=0.05),
       selectInput("solveFor", "Solve for:", c("Power", "Sample size"), selected = "Power")
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
        textOutput("t.test.power"),
-       textOutput("n")
+       textOutput("n"),
+       plotOutput("t.test.power.curve")
     )
   )
 ))
