@@ -12,10 +12,11 @@ power.t.test.wrapper <- function(input){
     {
     if(x$solveFor=="Power")
       out <- power.t.test(n=x$n, delta=x$delta, sd=x$stdDev,
-                          sig.level=x$alpha)
+                          sig.level=max(x$alpha,1e-10,na.rm=T))
     else
       out <- power.t.test(delta=x$delta, sd=x$stdDev,
-                          sig.level=x$alpha, power=x$power)
+                          sig.level=max(x$alpha,1e-10,na.rm=T), 
+                          power=max(x$power,0.1,na.rm=TRUE))
     }
   return(out)
 }
