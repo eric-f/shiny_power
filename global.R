@@ -12,10 +12,13 @@ power.t.test.wrapper <- function(input){
     {
     if(x$solveFor=="Power")
       out <- power.t.test(n=x$n, delta=x$delta, sd=x$stdDev,
-                          sig.level=x$alpha)
+                          sig.level=max(x$alpha, 1e-10, na.rm=TRUE),
+                          alternative=x$alternative)
     else
       out <- power.t.test(delta=x$delta, sd=x$stdDev,
-                          sig.level=x$alpha, power=x$power)
+                          sig.level=max(x$alpha, 1e-10, na.rm=TRUE),
+                          power=max(x$power, x$alpha+0.1, 0.01, na.rm=TRUE),
+                          alternative=x$alternative)
     }
   return(out)
 }
@@ -24,7 +27,8 @@ plot.power.t.test <- function(input){
   power <- seq(0.3, 0.99, 0.01)
   n <- apply(t(power), 2, function(p){
     power.t.test(delta=input$delta, sd=input$stdDev,
-                 sig.level=input$alpha, power=p)$n})
+                 sig.level=input$alpha, power=p,
+                 alternative=input$alternative)$n})
   pwrCurve <- ggplot(data_frame(power=power, n=n)) +
     geom_line(aes(y=power, x=n)) +
     labs(y="Power", x="Number of observations per group") +
@@ -38,7 +42,5 @@ plot.power.t.test <- function(input){
     pwrCurve <- pwrCurve +
     annotate("segment", x=min(n), xend=max(n),
              y=input$power, yend=input$power, col="red", linetype=2)
-  #if(input$solveFor=="Sample size")
-    #pwrCurve <- pwrCurve + geom_hline(aes_string(xintecept=input$power))
   return(pwrCurve)
 }
