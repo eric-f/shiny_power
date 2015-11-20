@@ -12,6 +12,7 @@ shinyServer(function(input, output, session) {
 
 
   out <- reactive(power.t.test.wrapper(input))
+  t.test.power.curve <- reactive(plot.power.t.test(input))
 
   ## update input fields -------------------------------------------------------
   observe({
@@ -25,13 +26,7 @@ shinyServer(function(input, output, session) {
   })
 
   ## output --------------------------------------------------------------------
-#   output$t.test.power <- renderText({
-#     round(out()$power, 3)
-#   })
-#   output$n <- renderText(
-#     ceiling(out()$n)
-#   )
   output$t.test.power.curve <- renderPlot({
-    plot.power.t.test(input)
+    t.test.power.curve()
   })
 })

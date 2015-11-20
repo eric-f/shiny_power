@@ -21,7 +21,9 @@ shinyUI(fluidPage(
       numericInput("stdDev", "SD of data:", 1, min=.Machine$double.eps, max=Inf, step=1),
       numericInput("alpha", "alpha:", 0.05, min=0, max=1, step=0.01),
       numericInput("power", "Power:", 0.8, min=0, max=1, step=0.05),
-      selectInput("solveFor", "Solve for:", c("Power", "Sample size"), selected = "Power")
+      selectInput("solveFor", "Solve for:", c("Power", "Sample size"), selected = "Power"),
+      radioButtons("alternative", label = "Alternative",
+                   choices = c("Two sided"="two.sided", "One sided"="one.sided"))
     ),
 
     # Show a plot of the generated distribution
