@@ -11,8 +11,8 @@ source("global.R")
 shinyServer(function(input, output, session) {
 
 
-  out <- reactive(power.t.test.wrapper(input))
-  t.test.power.curve <- reactive(plot.power.t.test(input))
+  out <- reactive(power.wrapper(input))
+  power.n.curve <- reactive(plot.power.n(input))
 
   ## update input fields -------------------------------------------------------
   observe({
@@ -26,7 +26,17 @@ shinyServer(function(input, output, session) {
   })
 
   ## output --------------------------------------------------------------------
-  output$t.test.power.curve <- renderPlot({
-    t.test.power.curve()
-  })
+  output$t.test.power.curve <-
+    output$prop.test.power.curve <-
+    renderPlot({
+      power.n.curve()
+    })
+
+  output$print.input <-
+    output$print.input2 <-
+      renderText({
+      print(names(input))
+      print(input$which.test)
+    })
+
 })
