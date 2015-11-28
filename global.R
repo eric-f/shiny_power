@@ -4,53 +4,98 @@ require("ggplot2")
 require("pwr")
 
 power.wrapper <- function(input){
-  x <- input
-  if(!is.null(x$delta) &
-     !is.null(x$stdDev) &
-     !is.null(x$alpha) &
-     !is.null(x$power) &
-     !is.null(x$n))
-    {
-    if(x$solveFor=="Power")
-      out <- power.t.test(n=x$n, delta=x$delta, sd=x$stdDev,
-                          sig.level=min(1,max(x$alpha,1e-10,na.rm=T)),
-                          alternative=x$alternative)
-    else
-      out <- power.t.test(delta=x$delta, sd=x$stdDev,
-                          sig.level=min(1,max(x$alpha,1e-10,na.rm=T)),
-                          power=min(1.0,max(x$power,0.1,na.rm=T)),
-                          alternative=x$alternative)
-  }
-  return(out)
+  print("Power.wrapper")
+  print(input$whichTest)
+  switch(input$whichTest,
+         "t.test"={
+            print("In power.wrapper::t.test")
+            if(!is.null(input$delta) &
+               !is.null(input$stdDev) &
+               !is.null(input$alpha) &
+               !is.null(input$power) &
+               !is.null(input$n))
+              {
+              if(input$solveFor=="Power")
+                out <- power.t.test(n=input$n, delta=input$delta, sd=input$stdDev,
+                                    sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
+                                    alternative=input$alternative)
+              else
+                out <- power.t.test(delta=input$delta, sd=input$stdDev,
+                                    sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
+                                    power=min(1.0,max(input$power,0.1,na.rm=T)),
+                                    alternative=input$alternative)
+            }
+            print(out$n)
+            print(out$power)
+            return(out)
+         },
+         "prop.test"={
+           print("In power.wrapper::prop.test")
+           if(!is.null(input$p1) &
+              !is.null(input$p2) &
+              !is.null(input$alpha) &
+              !is.null(input$power) &
+              !is.null(input$n))
+           {
+             if(input$solveFor=="Power")
+               out <- power.prop.test(n=input$n, p1=input$p1, p2=input$p2,
+                                   sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
+                                   alternative=input$alternative)
+             else
+               out <- power.prop.test(p1=input$p1, p2=input$p2,
+                                   sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
+                                   power=min(1.0,max(input$power,0.1,na.rm=T)),
+                                   alternative=input$alternative)
+           }
+           print(out$n)
+           print(out$power)
+           return(out)
+         },
+         {
+           ## Default value: Do nothing
+           ## Need this line to avoid errors while at About page
+           print("Nothing to do here...")
+           print(input$n)
+           print(input$power)
+           return(list(n=input$n, power=input$power))
+         }
+         )
 }
 
-
+#
 # calc.power.n.curve <- function(input){
+#   print("In calc.power.n.curve")
 #   power <- seq(0.3, 0.99, 0.01)
-#   n <- apply(t(power), 2, function(p){
-#     power.t.test(delta=input$delta, sd=input$stdDev,
-#                  sig.level=input$alpha, power=p,
-#                  alternative=input$alternative)$n})
-#   n <- switch(input$id,
-#   t.test = apply(t(power), 2, function(p){
+#   n <- switch(input$whichTest,
+#   "t.test" = apply(t(power), 2, function(p){
 #     power.t.test(delta=input$delta, sd=input$stdDev,
 #                  sig.level=input$alpha, power=p,
 #                  alternative=input$alternative)$n}),
-#   prop.test = apply(t(power), 2, function(p){
+#   "prop.test" = apply(t(power), 2, function(p){
 #     power.prop.test(p1=input$p1, p2=input$p2,
 #                  sig.level=input$alpha, power=p,
-#                  alternative=input$alternative)$n})
+#                  alternative=input$alternative)$n}),
+#   default = NULL
 #   )
 #   return(data_frame(power=power, n=n))
 # }
 
 plot.power.n <- function(input){
+  #print("In plot.power.n")
   power <- seq(0.3, 0.99, 0.01)
-  n <- apply(t(power), 2, function(p){
-    power.t.test(delta=input$delta, sd=input$stdDev,
-                 sig.level=input$alpha, power=p,
-                 alternative=input$alternative)$n})
-  pwrCurve <- ggplot(data_frame(power=power, n=n)) +
+  n <- switch(input$whichTest,
+    "t.test" = apply(t(power), 2, function(p){
+      power.t.test(delta=input$delta, sd=input$stdDev,
+                   sig.level=input$alpha, power=p,
+                   alternative=input$alternative)$n}),
+    "prop.test" = apply(t(power), 2, function(p){
+      power.prop.test(p1=input$p1, p2=input$p2,
+                   sig.level=input$alpha, power=p,
+                   alternative=input$alternative)$n})
+  )
+  power.n.curve.df <- data_frame(power=power, n=n)
+  # power.n.curve.df <- calc.power.n.curve(input)
+  pwrCurve <- ggplot(power.n.curve.df) +
     geom_line(aes(y=power, x=n)) +
     labs(y="Power", x="Number of observations per group") +
     ylim(c(0, 1)) +

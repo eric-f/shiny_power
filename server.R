@@ -10,7 +10,7 @@ source("global.R")
 
 shinyServer(function(input, output, session) {
 
-
+  ## Solve for power/sample size and make power curve --------------------------
   out <- reactive(power.wrapper(input))
   power.n.curve <- reactive(plot.power.n(input))
 
@@ -36,7 +36,7 @@ shinyServer(function(input, output, session) {
     output$print.input2 <-
       renderText({
       print(names(input))
-      print(input$which.test)
+      print(input$whichTest)
     })
 
 })
