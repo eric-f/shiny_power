@@ -26,15 +26,12 @@ shinyServer(function(input, output, session) {
   })
 
   ## output --------------------------------------------------------------------
-  output$t.test.power.curve <-
-    output$prop.test.power.curve <-
-    renderPlot({
-      power.n.curve()
+  output$power.curve <- renderPlot({
+    controlInput <-
+    power.n.curve()
     })
 
-  output$print.input <-
-    output$print.input2 <-
-      renderText({
+  output$print.input <- renderText({
       print(names(input))
       print(input$whichTest)
     })
