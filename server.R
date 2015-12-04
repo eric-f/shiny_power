@@ -27,7 +27,6 @@ shinyServer(function(input, output, session) {
 
   ## output --------------------------------------------------------------------
   output$power.curve <- renderPlot({
-    controlInput <-
     power.n.curve()
     })
 
