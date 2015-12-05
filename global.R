@@ -82,7 +82,19 @@ power.wrapper <- function(input){
 
 plot.power.n <- function(input){
   #print("In plot.power.n")
-  power <- seq(0.3, 0.99, 0.01)
+  minPower <- switch(input$whichTest,
+              "t.test" =
+                power.t.test(n = 2, delta=input$delta, sd=input$stdDev,
+                             sig.level=input$alpha,
+                             alternative=input$alternative)$power,
+              "prop.test" =
+                power.prop.test(n=2, p1=input$p1, p2=input$p2,
+                                sig.level=input$alpha,
+                                alternative=input$alternative)$power)
+  if(input$power < 0.99)
+    power <- seq(minPower, 0.99, 0.01)
+  else
+    power <- seq(minPower, min(input$power, 1-.Machine$double.eps), length=100)
   n <- switch(input$whichTest,
     "t.test" = apply(t(power), 2, function(p){
       power.t.test(delta=input$delta, sd=input$stdDev,
