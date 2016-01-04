@@ -37,8 +37,7 @@ shinyUI(fluidPage(
       selectInput("solveFor", "Solve for:", c("Power", "Sample size"), selected = "Power")),
     column(4,
            p("Solve for:"),
-           uiOutput("buttonPower", inline=T),
-           uiOutput("buttonSampleSize", inline=T),
-           uiOutput("buttonNull", inline=T))
+           bsButton(inputId = "solveForPower", label = "Power"),
+           bsButton(inputId = "solveForSampleSize", label = "Sample Size"))
   )
 ))

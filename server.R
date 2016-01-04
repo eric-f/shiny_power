@@ -6,6 +6,7 @@
 #
 
 library(shiny)
+library(shinyBS)
 source("global.R")
 
 shinyServer(function(input, output, session) {
@@ -14,38 +15,32 @@ shinyServer(function(input, output, session) {
   out <- reactive(power.wrapper(input))
   power.n.curve <- reactive(plot.power.n(input))
 
-  ## uis for action buttons
-  output$buttonPower <- renderUI({
-      actionButton("solveForPower", "Power",
-                   class=ifelse(input$solveFor=="Power", "btn-danger", "btn-default"))
-  })
-  output$buttonSampleSize <- renderUI({
-    actionButton("solveForSampleSize", "Sample Size",
-                 class=ifelse(input$solveFor=="Sample size", "btn-danger", "btn-default"))
-  })
-  output$buttonNull <- renderUI({
-    actionButton("solveForNull", "Null",
-                 class=ifelse(input$solveFor=="NULL", "btn-danger", "btn-default"))
-  })
-
   ## update input fields -------------------------------------------------------
   observe({
     if(input$solveFor=="Sample size"){
       updateNumericInput(session, "n", value=ceiling(out()$n))
+      updateButton(session, "solveForPower", style = "default", icon="", disabled = FALSE)
+      updateButton(session, "solveForSampleSize", style = "success", icon=icon("check"), disabled = TRUE)
     }
     if(input$solveFor=="Power"){
       updateNumericInput(session, "power", value=round(out()$power, 3),
                          min=input$alpha)
+      updateButton(session, "solveForPower", style = "success", icon=icon("check"), disabled = TRUE)
+      updateButton(session, "solveForSampleSize", style = "default", icon="", disabled = FALSE)
     }
   })
   observeEvent(input$solveForPower,{
       updateSelectInput(session, "solveFor", selected="Power")
       updateNumericInput(session, "n", value=ceiling(out()$n))
+      updateButton(session, "solveForPower", style = "success", icon=icon("check"), disabled = TRUE)
+      updateButton(session, "solveForSampleSize", style = "default", icon="", disabled = FALSE)
   })
   observeEvent(input$solveForSampleSize,{
     updateSelectInput(session, "solveFor", selected="Sample size")
     updateNumericInput(session, "power", value=round(out()$power, 3),
                        min=input$alpha)
+    updateButton(session, "solveForPower", style = "default", icon="", disabled = FALSE)
+    updateButton(session, "solveForSampleSize", style = "success", icon=icon("check"), disabled = TRUE)
   })
 
   ## output --------------------------------------------------------------------
