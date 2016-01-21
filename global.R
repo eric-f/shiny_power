@@ -121,3 +121,8 @@ plot.power.n <- function(input){
              y=input$power, yend=input$power, col="red", linetype=2)
   return(pwrCurve)
 }
+
+
+
+#' Ref:
+#' http://stackoverflow.com/questions/31051133/how-do-i-make-sure-that-a-shiny-reactive-plot-only-changes-once-all-other-reacti
