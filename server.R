@@ -6,7 +6,7 @@
 #
 
 library(shiny)
-library(shinyBS)
+# library(shinyBS)
 source("global.R")
 
 shinyServer(function(input, output, session) {
@@ -19,28 +19,11 @@ shinyServer(function(input, output, session) {
   observe({
     if(input$solveFor=="Sample size"){
       updateNumericInput(session, "n", value=ceiling(out()$n))
-      updateButton(session, "solveForPower", style = "default", icon="", disabled = FALSE)
-      updateButton(session, "solveForSampleSize", style = "success", icon=icon("check"), disabled = TRUE)
     }
     if(input$solveFor=="Power"){
       updateNumericInput(session, "power", value=round(out()$power, 3),
                          min=input$alpha)
-      updateButton(session, "solveForPower", style = "success", icon=icon("check"), disabled = TRUE)
-      updateButton(session, "solveForSampleSize", style = "default", icon="", disabled = FALSE)
     }
-  })
-  observeEvent(input$solveForPower,{
-      updateSelectInput(session, "solveFor", selected="Power")
-      updateNumericInput(session, "n", value=ceiling(out()$n))
-      updateButton(session, "solveForPower", style = "success", icon=icon("check"), disabled = TRUE)
-      updateButton(session, "solveForSampleSize", style = "default", icon="", disabled = FALSE)
-  })
-  observeEvent(input$solveForSampleSize,{
-    updateSelectInput(session, "solveFor", selected="Sample size")
-    updateNumericInput(session, "power", value=round(out()$power, 3),
-                       min=input$alpha)
-    updateButton(session, "solveForPower", style = "default", icon="", disabled = FALSE)
-    updateButton(session, "solveForSampleSize", style = "success", icon=icon("check"), disabled = TRUE)
   })
 
   ## output --------------------------------------------------------------------

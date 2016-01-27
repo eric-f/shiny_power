@@ -2,6 +2,7 @@ require("plyr")
 require("dplyr")
 require("ggplot2")
 require("pwr")
+require("shinyBS")
 
 power.wrapper <- function(input){
   print("Power.wrapper")
