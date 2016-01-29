@@ -8,53 +8,58 @@ power.wrapper <- function(input){
   print("Power.wrapper")
   print(input$whichTest)
   # print(input$delta)
-  print(out)
   switch(input$whichTest,
          "t.test"={
             print("In power.wrapper::t.test")
-            if(!is.na(input$delta) &
-               !is.na(input$stdDev) &
-               !is.na(input$alpha) &
-               !is.na(input$power) &
-               !is.na(input$n))
-              {
-              # if(input$solveFor=="Power")
-                out <- power.t.test(n=input$n, delta=input$delta, sd=input$stdDev,
+#             if(!is.na(input$delta) &
+#                !is.na(input$stdDev) &
+#                !is.na(input$alpha) &
+#                !is.na(input$power) &
+#                !is.na(input$n))
+              # {
+              if(input$solveFor=="Power"){
+                out <- try(power.t.test(n=input$n, delta=input$delta, sd=input$stdDev,
                                     sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
-                                    alternative=input$alternative)
-              # else{
-              if (input$solveFor == "Sample size") {
-                out1 <- try(power.t.test(delta=input$delta, sd=input$stdDev,
+                                    alternative=input$alternative))
+                if(class(out) != "try-error")
+                  return(out)
+              }
+              else{
+                out <- try(power.t.test(delta=input$delta, sd=input$stdDev,
                                     sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
                                     power=min(1.0,max(input$power,0.1,na.rm=T)),
                                     alternative=input$alternative))
-                if(class(out1) != "try-error")
-                  out <- out1
+                if(class(out) != "try-error")
+                  return(out)
               }
-            }
-            return(out)
+            # }
+           return(input)
          },
          "prop.test"={
            print("In power.wrapper::prop.test")
-           if(!is.na(input$p1) &
-              !is.na(input$p2) &
-              !is.na(input$alpha) &
-              !is.na(input$power) &
-              !is.na(input$n))
-           {
-             if(input$solveFor=="Power")
-               out <- power.prop.test(n=input$n, p1=input$p1, p2=input$p2,
+#            if(!is.na(input$p1) &
+#               !is.na(input$p2) &
+#               !is.na(input$alpha) &
+#               !is.na(input$power) &
+#               !is.na(input$n))
+#            {
+             if(input$solveFor=="Power"){
+               out <- try(power.prop.test(n=input$n, p1=input$p1, p2=input$p2,
                                    sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
-                                   alternative=input$alternative)
+                                   alternative=input$alternative))
+               if(class(out) != "try-error")
+                 return(out)
+               }
              else{
-               out <- power.prop.test(p1=input$p1, p2=input$p2,
+               out <- try(power.prop.test(p1=input$p1, p2=input$p2,
                                       sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
                                       power=min(1.0,max(input$power,0.1,na.rm=T)),
-                                      alternative=input$alternative)
+                                      alternative=input$alternative))
+               if(class(out) != "try-error")
+                 return(out)
              }
-
-           }
-           return(out)
+           # }
+           return(input)
          },
          {
            ## Default value: Do nothing
