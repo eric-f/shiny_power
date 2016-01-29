@@ -7,49 +7,53 @@ require("shinyBS")
 power.wrapper <- function(input){
   print("Power.wrapper")
   print(input$whichTest)
+  # print(input$delta)
+  print(out)
   switch(input$whichTest,
          "t.test"={
             print("In power.wrapper::t.test")
-            if(!is.null(input$delta) &
-               !is.null(input$stdDev) &
-               !is.null(input$alpha) &
-               !is.null(input$power) &
-               !is.null(input$n))
+            if(!is.na(input$delta) &
+               !is.na(input$stdDev) &
+               !is.na(input$alpha) &
+               !is.na(input$power) &
+               !is.na(input$n))
               {
-              if(input$solveFor=="Power")
+              # if(input$solveFor=="Power")
                 out <- power.t.test(n=input$n, delta=input$delta, sd=input$stdDev,
                                     sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
                                     alternative=input$alternative)
-              else
-                out <- power.t.test(delta=input$delta, sd=input$stdDev,
+              # else{
+              if (input$solveFor == "Sample size") {
+                out1 <- try(power.t.test(delta=input$delta, sd=input$stdDev,
                                     sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
                                     power=min(1.0,max(input$power,0.1,na.rm=T)),
-                                    alternative=input$alternative)
+                                    alternative=input$alternative))
+                if(class(out1) != "try-error")
+                  out <- out1
+              }
             }
-            print(out$n)
-            print(out$power)
             return(out)
          },
          "prop.test"={
            print("In power.wrapper::prop.test")
-           if(!is.null(input$p1) &
-              !is.null(input$p2) &
-              !is.null(input$alpha) &
-              !is.null(input$power) &
-              !is.null(input$n))
+           if(!is.na(input$p1) &
+              !is.na(input$p2) &
+              !is.na(input$alpha) &
+              !is.na(input$power) &
+              !is.na(input$n))
            {
              if(input$solveFor=="Power")
                out <- power.prop.test(n=input$n, p1=input$p1, p2=input$p2,
                                    sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
                                    alternative=input$alternative)
-             else
+             else{
                out <- power.prop.test(p1=input$p1, p2=input$p2,
-                                   sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
-                                   power=min(1.0,max(input$power,0.1,na.rm=T)),
-                                   alternative=input$alternative)
+                                      sig.level=min(1,max(input$alpha,1e-10,na.rm=T)),
+                                      power=min(1.0,max(input$power,0.1,na.rm=T)),
+                                      alternative=input$alternative)
+             }
+
            }
-           print(out$n)
-           print(out$power)
            return(out)
          },
          {
